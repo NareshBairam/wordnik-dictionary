@@ -1,0 +1,19 @@
+{
+  "name": "wordnik-dictionary",
+  "version": "1.0.0",
+  "description": "This is my dictionary based on Wordnik api",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NareshBairam/wordnik-dictionary.git"
+  },
+  "author": "NareshBairam",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NareshBairam/wordnik-dictionary/issues"
+  },
+  "homepage": "https://github.com/NareshBairam/wordnik-dictionary#readme"
+}
