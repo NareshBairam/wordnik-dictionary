@@ -1,5 +1,5 @@
 import Api from '../helpers/wordnikApiHelper';
-import util from '../helpers/util'
+import { getRandomNumber, jumbledWord } from '../helpers/util'
 import { wrongAnswerOptions } from '../outputMessages'
 
 const api = new Api();
@@ -10,7 +10,7 @@ function getRandomWord(callback) {
         if (err || !data) {
             callback(err, null);
         } else {
-            let word = data.results[util.getRandomNumber(data.results.length)].word;
+            let word = data.results[getRandomNumber(data.results.length)].word;
             callback(null, word.trim());
         }
     });
@@ -23,7 +23,7 @@ function getRandomSynonym(word, callback) {
             callback(err, null);
         } else {
             let synonyms = data.results[0].lexicalEntries[0].entries[0].senses[0]['synonyms'];
-            callback(null, synonyms[util.getRandomNumber(synonyms.length)].text);
+            callback(null, synonyms[getRandomNumber(synonyms.length)].text);
         }
     });
 }
@@ -35,7 +35,7 @@ function getRandomAntonym(word, callback) {
             callback(err, null);
         } else {
             let antonyms = data.results[0].lexicalEntries[0].entries[0].senses[0]['antonyms'];
-            callback(null, antonyms[util.getRandomNumber(antonyms.length)].text);
+            callback(null, antonyms[getRandomNumber(antonyms.length)].text);
         }
     });
 }
@@ -51,7 +51,7 @@ function getRandomDefinition(word, callback) {
             console.log(`No definition found for the word  : ${word} \n`)
         } else {
             let senses = data.results[0].lexicalEntries[0].entries[0].senses;
-            callback(null, senses[util.getRandomNumber(senses.length)]['definitions'][0]);
+            callback(null, senses[getRandomNumber(senses.length)]['definitions'][0]);
         }
     });
 }
@@ -65,7 +65,7 @@ function displayOption(word) {
         });
     }
 
-    switch (util.getRandomNumber(3)) {
+    switch (getRandomNumber(3)) {
         case 0:
             getDefinition();
             break;
@@ -105,7 +105,7 @@ export default class {
         });
     }
 
-    checkAnswer(answer, gameData){
+    checkAnswer(answer, gameData) {
 
         if (answer.toUpperCase() === gameData.word.toUpperCase()) {
             console.log("You entered correct answer. Moving onto your next question");
@@ -120,7 +120,47 @@ export default class {
         }
     }
 
-    showHint(gameData){
+    showHint(gameData) {
+        let hints = gameData.noOfHints;
+        let word = gameData.word;
 
+        switch (hints) {
+            case 0:
+                console.log(`Jumbled word : ${jumbledWord(gameData.word)}`);
+                break;
+            case 1:
+                getRandomDefinition(word, function (err, data) {
+                    if (err) {
+                        console.log(`Jumbled word : ${jumbledWord(gameData.word)}`);
+                    } else {
+                        console.log(`Definition for the word  : ${data}`);
+                    }
+                });
+                break;
+            case 2:
+                getRandomSynonym(word, function (err, data) {
+                    if (err || !data) {
+                        console.log(`Jumbled word : ${jumbledWord(gameData.word)}`);
+                    }
+                    else {
+                        console.log(`Synonym for the word  : ${data}`);
+                        console.log(data)
+                    }
+                });
+                break;
+
+            case 3:
+                getRandomAntonym(word, function (err, data) {
+                    if (err || !data) {
+                        console.log(`Jumbled word : ${jumbledWord(gameData.word)}`);
+                    }
+                    else {
+                        console.log(`Antonym for the word  : ${data}`);
+                    }
+                });
+                break;
+        }
+        gameData.noOfHints = (hints + 1) % 4;
+        gameData.isAnswering = true;
     }
 }
