@@ -96,28 +96,74 @@ function displayOption(word) {
     }
 }
 
+function checkSynonymAsAnswer(data, answer) {
+    let words = []
+    data.forEach(result => {
+        result['lexicalEntries'].forEach(lexicalEntrie => {
+            lexicalEntrie['entries'].forEach(entrie => {
+                entrie['senses'].forEach(sense => {
+                    sense["synonyms"].forEach(element => {
+                        words.push(element.text)
+                    });
+                })
+            })
+        })
+    })
+
+    let flag = false;
+    words.forEach(element => {
+        if (equal(element, answer)) {
+            flag = true;
+        }
+    })
+    return flag;
+}
+
+function equal(wordOne, wordTwo) {
+    return wordOne.trim().toUpperCase() === wordTwo.trim().toUpperCase();
+}
+
+function isCorrectAnswer(answer, word, callback) {
+
+    api.getSynonym(word, function (err, data) {
+        if (equal(answer, word) || checkSynonymAsAnswer(data.results, answer)) {
+            console.log("Correct answer")
+            callback(true);
+        } else {
+            callback(false);
+        }
+    });
+}
+
 export default class {
 
     startGame(callback) {
         getRandomWord(function (err, word) {
-            callback(null, word.replace("'", ""));
+            callback(null, word.trim());
             displayOption(word);
         });
     }
 
     checkAnswer(answer, gameData) {
 
-        if (answer.toUpperCase() === gameData.word.toUpperCase()) {
-            console.log("You entered correct answer. Moving onto your next question");
-            this.startGame(function (err, question) {
-                if (err) return console.log('Error while fetching Question');
-                gameData.word = question;
-            });
-        } else {
-            console.log('Wrong answer');
-            console.log(wrongAnswerOptions)
-            gameData.isAnswering = false;
-        }
+        isCorrectAnswer(answer, gameData.word, function (isCorrect) {
+            if (isCorrect) {
+                console.log("You entered correct answer. Moving onto your next question");
+                getRandomWord(function (err, word) {
+                    if (err) {
+                        return console.log('Error while fetching Question');
+                    } else {
+                        gameData.word = word;
+                        displayOption(word);
+                    }
+                });
+            }
+            else {
+                console.log('Wrong answer');
+                console.log(wrongAnswerOptions)
+                gameData.isAnswering = false;
+            }
+        });
     }
 
     showHint(gameData) {

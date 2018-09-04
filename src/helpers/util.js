@@ -1,6 +1,6 @@
 
 function getRandomNumber(n) {
-    return ((parseInt((Math.random() * 1000).toPrecision(1))) % n);
+    return ((parseInt((Math.random() * 5000).toPrecision(1))) % n);
 }
 
 function jumbledWord(word) {
