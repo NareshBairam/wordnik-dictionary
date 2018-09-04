@@ -3,8 +3,8 @@ import Dictionary from '../controllers/dictionaryController';
 import Game from '../controllers/gameController';
 import { invalidCommand, help } from '../outputMessages'
 
-export default (input) => {
-    let args = input.trim().split(" ");
+export default (input, gameData) => {
+    let args = input.split(" ");
     let keyword = args[0];
     let command = args[1];
     let word = args[2];
@@ -28,6 +28,11 @@ export default (input) => {
             case 'play':
                 game.startGame(function (err, question) {
                     if (err) return console.log('Error while fetching Question');
+
+                    gameData.isPlaying = true;
+                    gameData.isAnswering = true;
+                    gameData.word = question;
+                    gameData.noOfHints = 0;
                     console.log('-------------GAME STARTED-------------')
                     console.log('Please enter a correct word for definition, synonym or antonym');
                 })

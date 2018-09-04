@@ -1,5 +1,6 @@
 import Api from '../helpers/wordnikApiHelper';
 import util from '../helpers/util'
+import { wrongAnswerOptions } from '../outputMessages'
 
 const api = new Api();
 
@@ -35,7 +36,6 @@ function getRandomAntonym(word, callback) {
         } else {
             let antonyms = data.results[0].lexicalEntries[0].entries[0].senses[0]['antonyms'];
             callback(null, antonyms[util.getRandomNumber(antonyms.length)].text);
-            //console.log(antonyms[util.getRandomNumber(antonyms.length)].text)
         }
     });
 }
@@ -51,7 +51,6 @@ function getRandomDefinition(word, callback) {
             console.log(`No definition found for the word  : ${word} \n`)
         } else {
             let senses = data.results[0].lexicalEntries[0].entries[0].senses;
-            //console.log(senses[util.getRandomNumber(senses.length)]['definitions'][0])
             callback(null, senses[util.getRandomNumber(senses.length)]['definitions'][0]);
         }
     });
@@ -101,8 +100,27 @@ export default class {
 
     startGame(callback) {
         getRandomWord(function (err, word) {
-            callback(null, word);
+            callback(null, word.replace("'", ""));
             displayOption(word);
         });
+    }
+
+    checkAnswer(answer, gameData){
+
+        if (answer.toUpperCase() === gameData.word.toUpperCase()) {
+            console.log("You entered correct answer. Moving onto your next question");
+            this.startGame(function (err, question) {
+                if (err) return console.log('Error while fetching Question');
+                gameData.word = question;
+            });
+        } else {
+            console.log('Wrong answer');
+            console.log(wrongAnswerOptions)
+            gameData.isAnswering = false;
+        }
+    }
+
+    showHint(gameData){
+
     }
 }
