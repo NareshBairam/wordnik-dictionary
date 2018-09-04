@@ -41,4 +41,9 @@ export default class {
     getWordOfTheDay(word) {
 
     }
+
+    getListOfWords(callback){
+        let path = `${api_baseUrl}/wordlist/en/lexicalCategory=Verb`;
+        getData(path, callback);
+    }
 }

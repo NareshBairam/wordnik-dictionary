@@ -26,8 +26,10 @@ export default (input) => {
                 dictionary.getExamples(word);
                 break;
             case 'play':
-                game.getQuestion(function (err, question) {
-                    console.log(question);
+                game.startGame(function (err, question) {
+                    if (err) return console.log('Error while fetching Question');
+                    console.log('-------------GAME STARTED-------------')
+                    console.log('Please enter a correct word for definition, synonym or antonym');
                 })
                 break;
             case '--help':
